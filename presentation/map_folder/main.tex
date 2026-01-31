@@ -1,0 +1,198 @@
+\documentclass[final]{beamer}
+
+% ==================== PACKAGES ====================
+\usepackage[t,orientation=landscape,width=160,height=90,scale=1.5]{beamerposter}
+
+\usepackage[utf8]{inputenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
+\usepackage[most]{tcolorbox}
+
+% ==================== COLORS ====================
+\definecolor{HeaderBlue}{RGB}{20, 40, 80} 
+\definecolor{BannerBlue}{RGB}{65, 105, 225} 
+\definecolor{BackGround}{RGB}{255, 255, 255}
+
+% ==================== BOX STYLE ====================
+\newtcolorbox{posterbox}[1]{
+    enhanced,
+    colback=white,
+    colframe=HeaderBlue,
+    coltitle=white,
+    fonttitle=\bfseries\Large,
+    title={#1},
+    boxrule=2pt,
+    halign title=center,
+    sharp corners=south,
+    rounded corners=north,
+    left=1cm, right=1cm, top=1cm, bottom=1cm,
+    after skip=1cm
+}
+
+% ==================== DOCUMENT ====================
+\begin{document}
+\begin{frame}{}
+    
+    % --- FIXED HEADER ---
+    \begin{tikzpicture}[remember picture,overlay]
+        % 1. Blue Background Bar
+        \fill[BannerBlue] (current page.north west) rectangle ([yshift=-12cm]current page.north east);
+        
+        % 2. LEFT LOGO (Make sure ddsPNG.png exists)
+        \node[anchor=west] at ([xshift=3cm, yshift=-6cm]current page.north west) 
+            {\includegraphics[height=7cm]{ddsPNG}};
+            
+        % 3. RIGHT LOGO (Make sure technionPNG.png exists)
+        \node[anchor=east] at ([xshift=-0cm, yshift=-6cm]current page.north east) 
+            {\includegraphics[height=5cm]{technionPNG}};
+        
+        % 4. TEXT SECTION
+        \node[text=white, font=\Huge\bfseries, align=center] at ([yshift=-4cm]current page.north) 
+            {Arbitrage City: AI-Powered Real Estate Investment Engine};
+            
+        \node[text=white, font=\Large\bfseries, align=center] at ([yshift=-8cm]current page.north) 
+            {Mohamed Diab, Bayan Khateeb \hspace{2cm} Data Collection \& Management Lab --- Technion};
+    \end{tikzpicture}
+
+    % Push main content down
+    \vspace{13cm}
+
+    % --- COLUMNS ---
+    \begin{columns}[t]
+        
+        % ==================== COLUMN 1 ====================
+        \begin{column}{.31\paperwidth}
+            
+            \begin{posterbox}{Goal: A Universal Investment Engine}
+                To develop a scalable pipeline that automates the discovery of Real Estate Arbitrage opportunities by bridging disconnected data sources (Long-term Buy vs. Short-term Rent).
+                \vspace{0.5cm}
+                
+                \textbf{The Global Problem:} 
+                The market for buying homes and the market for Airbnb operate in silos. 
+                \begin{itemize}
+                    \item Investors lack a unified view of \textbf{Acquisition Cost vs. Potential Revenue}.
+                    \item Manual analysis relies on "gut feeling" and misses high-yield pockets.
+                \end{itemize}
+            \end{posterbox}
+
+            \begin{posterbox}{Methodology}
+                We built a 4-stage automated pipeline focused on \textbf{Net Yield} calculation.
+                \begin{enumerate}
+                    \item \textbf{Ingestion:} Dynamic scraping of real estate listings (handling JS/Rotation).
+                    \item \textbf{Feature Engineering:} Extracting "inclusive" comparison features (Luxury flags, Penthouse status, exact bed/bath counts).
+                    \item \textbf{Geospatial Mapping:} Exact lat/lon matching using ArcGIS to link sales to rental zones.
+                    \item \textbf{Predictive Modeling:} Random Forest Regressor trained on Airbnb ground truth to forecast revenue.
+                \end{enumerate}
+            \end{posterbox}
+
+            \begin{posterbox}{Case Study Implementation: NYC}
+                We deployed the engine on \textbf{New York City} due to its high data complexity and strict anti-bot protections.
+                
+                \vspace{0.5cm}
+                \textbf{Data Sources:}
+                \begin{itemize}
+                    \item \textbf{Buy Side:} Scraped \textit{Properstar.com} (Real-time Listings).
+                    \item \textbf{Rent Side:} Official \textit{InsideAirbnb} dataset.
+                    \item \textbf{Volume:} Trained on \textbf{24,437} verified Airbnb listings (Ground Truth) to ensure statistical significance.
+                \end{itemize}
+            \end{posterbox}
+
+        \end{column}
+
+        % ==================== COLUMN 2 ====================
+        \begin{column}{.31\paperwidth}
+
+            \begin{posterbox}{System Architecture}
+                \centering
+                \vspace{0.5cm}
+                \begin{tikzpicture}[
+                    node distance=2cm,
+                    process/.style={
+                        rectangle, 
+                        draw=HeaderBlue, 
+                        fill=white, 
+                        line width=3pt, 
+                        minimum width=16cm, 
+                        minimum height=2.5cm, 
+                        align=center, 
+                        font=\bfseries\Large
+                    },
+                    arrow/.style={-Stealth, thick, color=HeaderBlue, line width=3mm}
+                ]
+                    \node (web) [process] {1. Target Source (Properstar)};
+                    \node (scrape) [process, below=of web] {2. Robust Scraper\\(Playwright + Proxy Rotation)};
+                    \node (clean) [process, below=of scrape] {3. Feature Standardization\\(Luxury/Penthouse Logic)};
+                    \node (geo) [process, below=of clean] {4. Geo-Matching\\(ArcGIS Address $\to$ Lat/Lon)};
+                    \node (ml) [process, below=of geo, fill=HeaderBlue!10] {5. Yield Calculation\\(Random Forest + Expense Logic)};
+                    
+                    \draw [arrow] (web) -- (scrape);
+                    \draw [arrow] (scrape) -- (clean);
+                    \draw [arrow] (clean) -- (geo);
+                    \draw [arrow] (geo) -- (ml);
+                \end{tikzpicture}
+                
+                \vspace{1cm}
+                \textbf{Inclusive Logic Feature:}
+                Unlike simple scrapers, our system creates custom flags (\texttt{is\_luxury}, \texttt{is\_penthouse}) to ensure the ML model compares ``apples to apples'' when predicting prices.
+            \end{posterbox}
+
+            \begin{posterbox}{Proof of Concept: NYC Map}
+                \centering
+                \includegraphics[width=0.95\linewidth]{map.png}
+                \vspace{0.2cm}
+                \small Figure 1: The engine applied to NYC data. Red/Orange areas indicate high-yield opportunities (5\% -- 35\% Net Yield).
+            \end{posterbox}
+
+        \end{column}
+
+        % ==================== COLUMN 3 ====================
+        \begin{column}{.31\paperwidth}
+
+            \begin{posterbox}{Case Study Results (NYC)}
+                We refined the model to account for a \textbf{40\% expense ratio} and \textbf{55\% occupancy}, replacing theoretical gross numbers with realistic net income.
+                
+                \vspace{0.5cm}
+                \textbf{Model Accuracy:}
+                \begin{itemize}
+                    \item \textbf{Algorithm:} Random Forest Regressor (100 Trees).
+                    \item \textbf{Training Set:} 24,437 Cleaned Listings (Outliers Removed).
+                \end{itemize}
+                
+                \vspace{0.5cm}
+                \textbf{Findings:}
+                \begin{center}
+                \begin{tabular}{l c c}
+                    \toprule
+                    \textbf{Metric} & \textbf{Value} & \textbf{Outcome} \\
+                    \midrule
+                    Geo-Match Rate & 98\% & High Data Integrity \\
+                    \textbf{Arbitrage Ops} & \textbf{674} & \textbf{Found Pockets} \\
+                    Yield Range & 5\% -- 35\% & Realistic Spread \\
+                    \textbf{Avg Net Yield} & \textbf{9.9\%} & \textbf{vs 3-4\% Market Avg} \\
+                    \bottomrule
+                \end{tabular}
+                \end{center}
+            \end{posterbox}
+
+            \begin{posterbox}{Conclusions \& Future Work}
+                \begin{itemize}
+                    \item \textbf{Validation:} The pipeline identified \textbf{674} actionable opportunities with an average 9.9\% Net ROI, significantly outperforming the NYC long-term rental market.
+                    \item \textbf{Strategic Insight:} Luxury and Penthouse tags (detected by our pipeline) were key predictors of yield, accounting for significant price variance.
+                    \item \textbf{Next Steps:} Integrate Computer Vision (CNN) to score listing photos for condition (e.g., ``Renovated'' vs ``Fixer-upper'').
+                \end{itemize}
+            \end{posterbox}
+            
+            \vspace{2cm}
+            \centering
+            \textbf{Tools:} Databricks, Azure, Python, Plotly, Playwright
+
+        \end{column}
+
+    \end{columns}
+\end{frame}
+\end{document}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbitrage City - NYC Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Arbitrage<span>City</span></div>
+        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            AI-Powered Real Estate Investment Engine
+        </div>
+    </header>
+
+    <main>
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>Top 5 Listings <span style="font-size: 0.8em; color: var(--text-secondary); font-weight: 400;">(Highest Yield)</span></h2>
+            </div>
+            <ul id="top-listings-list">
+                <!-- Items injected by JS -->
+            </ul>
+        </aside>
+        
+        <div id="map-container"></div>
+    </main>
+
+    <!-- Data -->
+    <script src="data.js"></script>
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

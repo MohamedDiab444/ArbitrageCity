@@ -1,0 +1,7 @@
+pandas
+numpy
+playwright
+scikit-learn
+geopy
+plotly
+tqdm
