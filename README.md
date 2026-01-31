@@ -13,7 +13,7 @@
 - **Performance:** Achieved a projected **9.9% Average Yield** on identified opportunities.
 
 ## Visualizations
-- [**Interactive Map (Netlify)**](#) *(Link to be added)*
+- [**Interactive Map (Netlify)**](https://hilarious-fenglisu-693e85.netlify.app/)
 - [**Project Demo (YouTube)**](#) *(Link to be added)*
 
 ## Project Structure
