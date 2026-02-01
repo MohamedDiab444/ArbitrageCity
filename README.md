@@ -30,7 +30,9 @@ By scraping live listings and predicting their potential Airbnb revenue using Ra
 - **Performance:** Achieved a projected **9.9% Average Yield** (vs Market Avg 3%).
 
 ## 📂 Project Structure
-- `src/`: Contains `ArbitrageCity_Main.ipynb` (End-to-end pipeline: Scraping, Cleaning, Training, Predicting).
+- `src/`: 
+    - `1_scraper_properstar.ipynb`: The extraction logic for real estate data.
+    - `2_arbitrage_city_ml.ipynb`: The end-to-end ML pipeline (Loading, Cleaning, Training, Predicting).
 - `data/`: Dataset files (Ignored for confidentiality).
 - `docs/`: Project poster and visuals.
 - `presentation/`: Web-based map visualization source code.
@@ -43,9 +45,11 @@ By scraping live listings and predicting their potential Airbnb revenue using Ra
 1. **Prerequisites:** 
    - A Databricks environment (or local Jupyter with Spark installed).
    - Install dependencies: `pip install -r requirements.txt`.
-2. **Data Setup:**
+2. **Data Extraction (Optional):**
+   - Run `1_scraper_properstar.ipynb` to scrape live listings (Requires Proxies/Headless Browser).
+3. **Data Setup:**
    - Download `nyc_enriched_progress.csv` from the link in the Appendix (Azure).
-   - **Upload the CSV** to the same folder as the notebook `ArbitrageCity_Main.ipynb`.
-3. **Execution:**
-   - Run `ArbitrageCity_Main.ipynb`.
+   - **Upload the CSV** to the same folder as the notebook `2_arbitrage_city_ml.ipynb`.
+4. **Execution:**
+   - Run `2_arbitrage_city_ml.ipynb`.
    - The notebook will handle cleaning, geocoding, ML training, and visualization.
