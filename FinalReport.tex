@@ -1,6 +1,7 @@
 \documentclass[11pt, a4paper]{article}
 
 % ==================== PACKAGES ====================
+\usepackage[T1]{fontenc} % Fixes character rendering like >
 \usepackage[margin=1in]{geometry} 
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
@@ -118,7 +119,7 @@ To intuitively validate the feature engineering, we performed a \textbf{"Twin Ap
     \centering
     % REPLACE 'map.png' with your actual screenshot filename
     \includegraphics[width=0.9\linewidth, height=6cm, keepaspectratio]{map.png}
-    \caption{Arbitrage Map of NYC. Red/Yellow dots indicate High-Yield Pockets (>10\%).}
+    \caption{Arbitrage Map of NYC. Red/Yellow dots indicate High-Yield Pockets ($>10\%$).}
     \label{fig:map}
 \end{figure}
 
