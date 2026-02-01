@@ -93,7 +93,7 @@ These engineered features allowed the machine learning model to compare "apples 
 \section{Methodology}
 
 \subsection{Predictive Modeling: Random Forest}
-We selected a \textbf{Random Forest Regressor} (100 Trees) for the valuation model. We chose this over Linear Regression for two key reasons: **Non-Linearity** (handling price floors/ceilings) and **Interaction Effects** (capturing that a "Doorman" is worth more in Manhattan than in Staten Island without manual interaction engineering).
+We selected a \textbf{Random Forest Regressor} (100 Trees) for the valuation model. We chose this over Linear Regression for two key reasons: \textbf{Non-Linearity} (handling price floors/ceilings) and \textbf{Interaction Effects} (capturing that a "Doorman" is worth more in Manhattan than in Staten Island without manual interaction engineering).
 
 \subsection{Refining the Yield Calculation (The Reality Check)}
 In our initial experiments, the raw model predicted yields as high as 58\%. Upon reflection, we realized this was calculating "Gross Revenue" assuming 100\% occupancy—an unrealistic metric. To ensure our tool provided defensible investment advice, we refined our ROI formula to account for significant market friction.
@@ -103,15 +103,15 @@ We defined \textbf{Net Yield} as:
     Net\_Yield = \frac{(Predicted\_Price \times 365 \times \text{Occupancy}) \times (1 - \text{Expense\_Ratio})}{Purchase\_Price}
 \end{equation}
 
-We explicitly hardcoded conservative assumptions: an **Occupancy Rate of 55\%** (NYC average) and an **Expense Ratio of 40\%** (covering Airbnb Service Fees, Cleaning, Taxes, and Maintenance). By applying these strict penalties, we filtered out hundreds of "false positive" opportunities, leaving only the truly robust investments.
+We explicitly hardcoded conservative assumptions: an \textbf{Occupancy Rate of 55\%} (NYC average) and an \textbf{Expense Ratio of 40\%} (covering Airbnb Service Fees, Cleaning, Taxes, and Maintenance). By applying these strict penalties, we filtered out hundreds of "false positive" opportunities, leaving only the truly robust investments.
 
 % ==================== 5. EVALUATION ====================
 \section{Evaluation and Results}
 
 \subsection{Model Performance}
-The Random Forest model was trained on 80\% of the Airbnb data and validated on a 20\% hold-out set. The final model trained on **24,437 listings** achieved a **MAE (Mean Absolute Error) of $\approx \$1,200$** on annualized revenue. Given the high variance in NYC pricing (listings range from \$50 to \$5,000/night), this indicates strong predictive power.
+The Random Forest model was trained on 80\% of the Airbnb data and validated on a 20\% hold-out set. The final model trained on \textbf{24,437 listings} achieved a \textbf{MAE (Mean Absolute Error) of $\approx \$1,200$} on annualized revenue. Given the high variance in NYC pricing (listings range from \$50 to \$5,000/night), this indicates strong predictive power.
 
-To intuitively validate the feature engineering, we performed a **"Twin Apartment Test."** We fed the model two hypothetical properties located at the exact same coordinates (Times Square): Apartment A (Basic) and Apartment B (Luxury/Doorman). The model predicted a nightly rate for Apartment B that was \textbf{35\% higher} than Apartment A. This confirms that the model successfully learned to price \textit{quality}, not just location.
+To intuitively validate the feature engineering, we performed a \textbf{"Twin Apartment Test."} We fed the model two hypothetical properties located at the exact same coordinates (Times Square): Apartment A (Basic) and Apartment B (Luxury/Doorman). The model predicted a nightly rate for Apartment B that was \textbf{35\% higher} than Apartment A. This confirms that the model successfully learned to price \textit{quality}, not just location.
 
 % --- IMAGE 2: THE MAP / RESULTS ---
 \begin{figure}[H]
@@ -133,7 +133,7 @@ Upon deploying the model on the ~2,000 scraped real estate listings, the results
 % ==================== 6. LIMITATIONS ====================
 \section{Limitations and Reflection}
 
-While the pipeline successfully identifies financial arbitrage, there are distinct limitations. First is **Condition Assessment:** The current model cannot "see" the physical condition of a property. A "fixer-upper" might appear as a high-yield opportunity because of its low purchase price, but the model ignores the renovation costs. Second is **Regulatory Risk:** NYC has strict laws (Local Law 18) regarding short-term rentals. Our model identifies \textit{financial} potential based on historical demand, but does not filter for \textit{legal} compliance. Finally, **Data Availability:** Maintaining the scraper requires constant updates to bypass evolving WAFs and Captchas, representing a long-term maintenance cost.
+While the pipeline successfully identifies financial arbitrage, there are distinct limitations. First is \textbf{Condition Assessment:} The current model cannot "see" the physical condition of a property. A "fixer-upper" might appear as a high-yield opportunity because of its low purchase price, but the model ignores the renovation costs. Second is \textbf{Regulatory Risk:} NYC has strict laws (Local Law 18) regarding short-term rentals. Our model identifies \textit{financial} potential based on historical demand, but does not filter for \textit{legal} compliance. Finally, \textbf{Data Availability:} Maintaining the scraper requires constant updates to bypass evolving WAFs and Captchas, representing a long-term maintenance cost.
 
 % ==================== 7. CONCLUSION ====================
 \section{Conclusion}
