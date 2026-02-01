@@ -30,10 +30,10 @@ By scraping live listings and predicting their potential Airbnb revenue using Ra
 - **Performance:** Achieved a projected **9.9% Average Yield** (vs Market Avg 3%).
 
 ## 🔐 Security & Configuration
-This project requires credentials for BrightData (scraping) and Azure (storage). To keep these secure, we use a `secrets.json` file.
+This project requires credentials for BrightData (scraping) and Azure (storage).
 
-1. Create a `secrets.json` file in the root directory.
-2. Add your credentials in the following format:
+1. **For Instructors:** The `secrets.json` file is provided in the private Azure submission folder (`submissions/bayan_mohammad/`). Download it and place it in the root directory of this project to enable full functionality.
+2. **Manual Setup:** Alternatively, create a `secrets.json` file in the root directory with the following format:
 ```json
 {
     "BRIGHTDATA_USER": "your_user",
