@@ -54,9 +54,14 @@ This project requires credentials for BrightData (scraping) and Azure (storage).
 - `docs/`: Project poster and visuals.
 - `presentation/`: Web-based map visualization source code.
 
-## 🌐 Visualizations
-- [**Interactive Map (Netlify)**](https://hilarious-fenglisu-693e85.netlify.app/)
-- [**Project Demo (YouTube)**](https://youtu.be/Dd-n1cR28pA?si=rTUPVtx4c0u9n_6g)
+## 🌐 Visualizations (Recommended Start)
+The most effective way to evaluate **Arbitrage City** is through our live deployment:
+
+- 🗺️ [**Interactive Map (Netlify)**](https://hilarious-fenglisu-693e85.netlify.app/) **(Start Here!)**  
+  *Explore the 674 identified arbitrage opportunities directly in your browser without running code.*
+  
+- 📺 [**Project Demo (YouTube)**](https://youtu.be/Dd-n1cR28pA?si=rTUPVtx4c0u9n_6g)  
+  *A guided walkthrough of the user journey.*
 
 ## ☁️ Dataset Location
 **Azure Storage:** `submissions/bayan_mohammad/`  
