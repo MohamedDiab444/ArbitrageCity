@@ -29,6 +29,23 @@ By scraping live listings and predicting their potential Airbnb revenue using Ra
 - **Arbitrage Ops Found:** 674 Properties (>5% Net Yield).
 - **Performance:** Achieved a projected **9.9% Average Yield** (vs Market Avg 3%).
 
+## 🔐 Security & Configuration
+This project requires credentials for BrightData (scraping) and Azure (storage). To keep these secure, we use a `secrets.json` file.
+
+1. Create a `secrets.json` file in the root directory.
+2. Add your credentials in the following format:
+```json
+{
+    "BRIGHTDATA_USER": "your_user",
+    "BRIGHTDATA_PASS": "your_password",
+    "BRIGHTDATA_HOST": "your_host",
+    "AZURE_STORAGE_ACCOUNT": "your_account",
+    "AZURE_CONTAINER": "your_container",
+    "AZURE_SAS_TOKEN": "your_sas_token"
+}
+```
+*Note: This file is ignored by Git to prevent accidental exposure of private keys.*
+
 ## 📂 Project Structure
 - `src/`: 
     - `1_scraper_properstar.ipynb`: The extraction logic for real estate data.

@@ -2,6 +2,7 @@
 data/
 *.csv
 *.env
+secrets.json
 
 # Documentation (Exclude all PDFs except the Poster)
 *.pdf
