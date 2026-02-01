@@ -1,0 +1,184 @@
+\documentclass[11pt, a4paper]{article}
+
+% ==================== PACKAGES ====================
+\usepackage[margin=1in]{geometry} 
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{wrapfig} % Added for text wrapping around images if needed
+
+% ==================== FORMATTING OPTIMIZATION ====================
+% Tight spacing to accommodate images within 5 pages
+\setlength{\parskip}{0.4em} 
+\setstretch{1.0} 
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{5pt}{3pt}
+
+% ==================== HEADER ====================
+\title{\vspace{-2cm}\textbf{Arbitrage City: AI-Powered Real Estate Investment Engine}}
+\author{
+    \textbf{Data Collection \& Management Lab (00940290)} \\
+    Students: Mohamed Diab [212703029], Bayan Khateeb [211709597] \\
+    Technion -- Israel Institute of Technology
+}
+\date{February 1, 2026}
+
+\begin{document}
+
+\maketitle
+
+% ==================== ABSTRACT ====================
+\begin{abstract}
+Real estate investors currently lack a unified framework to assess the profitability of short-term rental investments. The market for purchasing properties and the market for daily rentals operate in data silos, forcing investors to rely on manual, time-consuming cross-referencing. In this project, we present \textit{Arbitrage City}, an automated pipeline that ingests live real estate listings and predicts their Airbnb revenue potential using Machine Learning. By implementing a robust scraper with session rotation and engineering "inclusive" features such as luxury status and penthouse classification, our Random Forest model achieved a Mean Absolute Error of $\approx \$1,200$ on annual revenue. Applied to the New York City market, the system identified 674 properties with a Net Yield between 5\% and 35\%, revealing significant market inefficiencies in the outer boroughs.
+\end{abstract}
+
+% ==================== 1. INTRODUCTION ====================
+\section{Introduction}
+
+In every major metropolitan city, two massive real estate markets operate in parallel but disconnected streams: the "Long-term" market for buying residential properties and the "Short-term" market for rentals (e.g., Airbnb). Theoretically, in an efficient market, the purchasing price of a property ($Cost$) should be directly proportional to its potential revenue generation ($Value$). However, practically no structured data flows between these two sectors. Real estate listings display purchasing metrics (Price/Sqft), while rental platforms display revenue metrics (Price/Night).
+
+This data disconnect creates a significant "Blind Spot." An investor looking to purchase a property for rental income is forced to perform a manual, disjointed analysis. This process is slow, prone to cognitive bias, and computationally limited to analyzing a few properties at a time. Consequently, high-yield opportunities in "non-obvious" neighborhoods—where the buy price is low but rental demand is steady—often go unnoticed.
+
+\textbf{Proposed Solution:} We propose \textbf{Arbitrage City}, an automated, data-driven investment engine designed to bridge this gap. By automating the ingestion of live real estate listings and cross-referencing them with a Machine Learning model trained on historical Airbnb performance, our system predicts the \textbf{Net Yield} of any property for sale in real-time. Our primary research question is: \textit{Can we accurately predict the short-term rental revenue of a property listed for sale using "inclusive" feature mapping, and use this prediction to identify specific assets that significantly outperform the market average?}
+
+% ==================== 2. DATA COLLECTION ====================
+\section{Data Collection and Integration}
+
+\subsection{Original Data: The Ground Truth}
+We utilized the \textit{InsideAirbnb} dataset (Parquet format) filtered for New York City, provided by the Data Collection & Management Lab course staff. This resulted in \textbf{24,437 verified listings} which served as our "Ground Truth" for training. Crucially, this dataset provided the target variable (\texttt{price} per night) and a rich feature set. We specifically utilized the nested JSON \texttt{details} column and the raw text \texttt{amenities} column to extract granular features often lost in standard CSV exports.
+
+\subsection{Additional Data: The "Cost" Side (Scraping)}
+To calculate ROI, we needed the purchasing price of real-time listings. We targeted \textit{Properstar.com}, a global real estate portal, focusing on the 5 Boroughs of NYC. Scraping modern real estate platforms presents significant technical challenges due to dynamic JavaScript rendering and strict Web Application Firewalls (WAFs).
+
+\begin{itemize}[noitemsep, topsep=0pt]
+    \item \textbf{Dynamic Rendering:} We implemented a robust scraper using \textbf{Playwright}, which spins up a headless Chromium browser instance to render the DOM exactly as a user sees it.
+    \item \textbf{Session Rotation:} To bypass WAF blocking, we architected a session rotation system. For every batch of 50 listings, the scraper generates a new session with a unique fingerprint. This allowed us to successfully ingest approximately \textbf{2,000 live listings} without triggering IP bans.
+\end{itemize}
+
+% --- IMAGE 1: PIPELINE / ARCHITECTURE ---
+\begin{figure}[H]
+    \centering
+    % REPLACE 'pipeline.png' with your actual screenshot filename
+    \includegraphics[width=0.85\linewidth, height=5cm, keepaspectratio]{pipeline.png} 
+    \caption{The Arbitrage City Pipeline: From Scraping to Yield Prediction.}
+    \label{fig:pipeline}
+\end{figure}
+
+\subsection{Integration: Bridging the Schema Gap}
+The core integration challenge was that Sales data and Rental data use different schemas.
+\begin{enumerate}[noitemsep, topsep=0pt]
+    \item \textbf{Geocoding:} We used the \texttt{ArcGIS} API to convert specific addresses from the scraped data into Latitude/Longitude coordinates. This "Primary Key" allowed spatial matching with the Airbnb dataset.
+    \item \textbf{Feature Mapping:} We parsed the nested \texttt{details} column in the Airbnb dataset to extract exact counts for \texttt{beds} and \texttt{baths} to match the structured columns available in our scraped data.
+\end{enumerate}
+
+% ==================== 3. DATA ANALYSIS ====================
+\section{Data Analysis \& Feature Engineering}
+
+\subsection{The "Inclusive Logic" Approach}
+Initial exploratory data analysis revealed that a simple "Beds/Baths" comparison was insufficient. In NYC, a 2-bedroom basement unit and a 2-bedroom luxury suite in the same zip code have vastly different revenue potentials. A naive model would average these prices, leading to false arbitrage signals. To solve this, we implemented \textbf{Inclusive Feature Engineering}:
+\begin{itemize}[noitemsep, topsep=0pt]
+    \item \textbf{Luxury Scoring:} We parsed the \texttt{amenities} text field using Regex to search for high-value keywords. We assigned weights to specific terms: \textit{Pool, Doorman, Gym, View, Concierge}. This generated a binary \texttt{is\_luxury} flag valid for both datasets.
+    \item \textbf{Penthouse Detection:} We created a binary flag \texttt{is\_penthouse} by scanning listing titles.
+    \item \textbf{Capacity Calculation:} We standardized capacity estimation across both datasets, assuming a standard occupancy of 2 guests per bedroom.
+\end{itemize}
+These engineered features allowed the machine learning model to compare "apples to apples." Feature importance analysis confirmed that the \texttt{is\_luxury} status was often more predictive of price than the number of bathrooms.
+
+% ==================== 4. METHODOLOGY ====================
+\section{Methodology}
+
+\subsection{Predictive Modeling: Random Forest}
+We selected a \textbf{Random Forest Regressor} (100 Trees) for the valuation model. We chose this over Linear Regression for two key reasons: **Non-Linearity** (handling price floors/ceilings) and **Interaction Effects** (capturing that a "Doorman" is worth more in Manhattan than in Staten Island without manual interaction engineering).
+
+\subsection{Refining the Yield Calculation (The Reality Check)}
+In our initial experiments, the raw model predicted yields as high as 58\%. Upon reflection, we realized this was calculating "Gross Revenue" assuming 100\% occupancy—an unrealistic metric. To ensure our tool provided defensible investment advice, we refined our ROI formula to account for significant market friction.
+
+We defined \textbf{Net Yield} as:
+\begin{equation}
+    Net\_Yield = \frac{(Predicted\_Price \times 365 \times \text{Occupancy}) \times (1 - \text{Expense\_Ratio})}{Purchase\_Price}
+\end{equation}
+
+We explicitly hardcoded conservative assumptions: an **Occupancy Rate of 55\%** (NYC average) and an **Expense Ratio of 40\%** (covering Airbnb Service Fees, Cleaning, Taxes, and Maintenance). By applying these strict penalties, we filtered out hundreds of "false positive" opportunities, leaving only the truly robust investments.
+
+% ==================== 5. EVALUATION ====================
+\section{Evaluation and Results}
+
+\subsection{Model Performance}
+The Random Forest model was trained on 80\% of the Airbnb data and validated on a 20\% hold-out set. The final model trained on **24,437 listings** achieved a **MAE (Mean Absolute Error) of $\approx \$1,200$** on annualized revenue. Given the high variance in NYC pricing (listings range from \$50 to \$5,000/night), this indicates strong predictive power.
+
+To intuitively validate the feature engineering, we performed a **"Twin Apartment Test."** We fed the model two hypothetical properties located at the exact same coordinates (Times Square): Apartment A (Basic) and Apartment B (Luxury/Doorman). The model predicted a nightly rate for Apartment B that was \textbf{35\% higher} than Apartment A. This confirms that the model successfully learned to price \textit{quality}, not just location.
+
+% --- IMAGE 2: THE MAP / RESULTS ---
+\begin{figure}[H]
+    \centering
+    % REPLACE 'map.png' with your actual screenshot filename
+    \includegraphics[width=0.9\linewidth, height=6cm, keepaspectratio]{map.png}
+    \caption{Arbitrage Map of NYC. Red/Yellow dots indicate High-Yield Pockets (>10\%).}
+    \label{fig:map}
+\end{figure}
+
+\subsection{Business Findings}
+Upon deploying the model on the ~2,000 scraped real estate listings, the results revealed significant market inefficiencies:
+\begin{itemize}[noitemsep, topsep=0pt]
+    \item \textbf{Arbitrage Opportunities:} The system identified \textbf{674 listings} that met our strict criteria (positive cash flow after 40\% expenses).
+    \item \textbf{Average Yield:} The top opportunities offered an average \textbf{9.9\% Net Yield}. This significantly outperforms the typical NYC long-term rental cap rate of 3--4\%.
+    \item \textbf{Geographic Insight:} A spatial analysis showed that Manhattan listings had the highest revenue potential but prohibitive entry costs ($>\$2M$). The highest ROI pockets were found in \textbf{Brooklyn (Bed-Stuy)} and \textbf{Queens (Astoria)}, where entry prices remain moderate but short-term rental demand is high.
+\end{itemize}
+
+% ==================== 6. LIMITATIONS ====================
+\section{Limitations and Reflection}
+
+While the pipeline successfully identifies financial arbitrage, there are distinct limitations. First is **Condition Assessment:** The current model cannot "see" the physical condition of a property. A "fixer-upper" might appear as a high-yield opportunity because of its low purchase price, but the model ignores the renovation costs. Second is **Regulatory Risk:** NYC has strict laws (Local Law 18) regarding short-term rentals. Our model identifies \textit{financial} potential based on historical demand, but does not filter for \textit{legal} compliance. Finally, **Data Availability:** Maintaining the scraper requires constant updates to bypass evolving WAFs and Captchas, representing a long-term maintenance cost.
+
+% ==================== 7. CONCLUSION ====================
+\section{Conclusion}
+We successfully developed an automated pipeline that solves the real estate "Blind Spot." By scraping live data using advanced browser automation, engineering inclusive features like luxury flags, and applying a rigorous Net Yield formula, \textbf{Arbitrage City} identified \textbf{674 high-potential assets} that manual analysis would miss. The project demonstrates that bridging data silos with Machine Learning can reveal significant value, particularly in the outer boroughs of NYC. Future iterations could integrate Computer Vision to assess property condition, further refining the valuation model.
+
+% ==================== APPENDIX ====================
+\newpage
+\section*{Appendix}
+
+\subsection*{A. References}
+\begin{itemize}[noitemsep]
+    \item InsideAirbnb Dataset: Provided by the Data Collection & Management Lab course staff for academic research purposes.
+    \item Properstar Real Estate: \url{https://www.properstar.com/}
+    \item Playwright for Python: \url{https://playwright.dev/python/}
+    \item ArcGIS Geocoding API: \url{https://developers.arcgis.com/python/}
+\end{itemize}
+
+\subsection*{B. Project Links}
+
+\noindent \textbf{1. GitHub Repository:} \\
+\url{https://github.com/MohamedDiab444/ArbitrageCity} \\
+\textit{Contains: Scraper code (Playwright), ML Pipeline (Databricks Notebooks), and README instructions.}
+
+\vspace{0.5cm}
+
+\noindent \textbf{2. Interactive Map (Netlify):} \\
+\url{https://hilarious-fenglisu-693e85.netlify.app/} \\
+\textit{Visualizes the 674 identified arbitrage opportunities.}
+
+\vspace{0.5cm}
+
+\noindent \textbf{3. User Journey Video (Demo):} \\
+\url{https://youtu.be/YOUR_ACTUAL_VIDEO_LINK_HERE} \\ % REPLACE THIS
+\textit{A demonstration of the interactive map and how an investor uses the tool.}
+
+\vspace{0.5cm}
+
+\noindent \textbf{4. Technical Overview Video:} \\
+\url{https://youtu.be/YOUR_ACTUAL_TECH_VIDEO_LINK} \\ % REPLACE THIS
+\textit{A deep dive into the scraping architecture, feature engineering, and Random Forest logic.}
+
+\vspace{0.5cm}
+
+\noindent \textbf{5. Dataset (Cloud Storage):} \\
+\url{https://lab94290.dfs.core.windows.net/submissions/bayan_mohammad/} \\
+\textit{Contains: nyc\_enriched\_progress.csv and nyc\_arbitrage\_final.csv}
+
+\end{document}
