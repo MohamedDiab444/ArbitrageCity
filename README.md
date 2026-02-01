@@ -39,27 +39,13 @@ By scraping live listings and predicting their potential Airbnb revenue using Ra
 - [**Interactive Map (Netlify)**](https://hilarious-fenglisu-693e85.netlify.app/)
 - [**Project Demo (YouTube)**](#) *(Link to be added)*
 
-## 💻 Getting Started
-
-### Prerequisites
-- Python 3.9+
-- Jupyter Notebook
-
-### Installation
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Place confidential CSV files (`nyc_arbitrage_final.csv`) in the `data/` directory.
-
-### Usage
-Run the main notebook in `src/`:
-```bash
-jupyter notebook src/ArbitrageCity_Main.ipynb
-```
-The notebook handles the full pipeline:
-1. **Scraping** (Requires Proxies/Headless Browser configuration).
-2. **Data Loading & Cleaning**.
-3. **Inclusive Logic** (Luxury Score generation).
-4. **Model Training & Map Visualization**.
+## 💻 How to Run
+1. **Prerequisites:** 
+   - A Databricks environment (or local Jupyter with Spark installed).
+   - Install dependencies: `pip install -r requirements.txt`.
+2. **Data Setup:**
+   - Download `nyc_enriched_progress.csv` from the link in the Appendix (Azure).
+   - **Upload the CSV** to the same folder as the notebook `ArbitrageCity_Main.ipynb`.
+3. **Execution:**
+   - Run `ArbitrageCity_Main.ipynb`.
+   - The notebook will handle cleaning, geocoding, ML training, and visualization.
